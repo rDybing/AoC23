@@ -16,7 +16,8 @@ type dataT struct {
 
 type raceT struct {
 	result []int
-	sum    int
+	sum1   int
+	sum2   int
 }
 
 var d dataT
@@ -29,8 +30,9 @@ func main() {
 	start := time.Now()
 	var r raceT
 	r.part1(d)
-	fmt.Printf("Part 1: sum of race wins are %d\n", r.sum)
-	//fmt.Printf("Part 2: Following new strategy in part 2, score is %d\n", score2)
+	fmt.Printf("Part 1: sum of race wins are %d\n", r.sum1)
+	r.part2(d)
+	fmt.Printf("Part 2: sum of long race is %d\n", r.sum2)
 	done := time.Now()
 	diff := done.Sub(start)
 	fmt.Printf("Execution time: %d µSeconds\n", diff.Microseconds())
@@ -56,13 +58,40 @@ func (r *raceT) part1(d dataT) {
 		r.result = append(r.result, resTemp)
 	}
 	for _, sumTemp := range r.result {
-		if r.sum == 0 {
-			r.sum = sumTemp
+		if r.sum1 == 0 {
+			r.sum1 = sumTemp
 		} else {
-			r.sum *= sumTemp
+			r.sum1 *= sumTemp
 		}
 	}
 	fmt.Printf("result: %+v\n", r)
+}
+
+func (r *raceT) part2(d dataT) {
+	time := joinNumbers(d.time)
+	dist := joinNumbers(d.distance)
+	var round []int
+	for ms := 1; ms < time; ms++ {
+		timeToMove := time - ms
+		distResult := timeToMove * ms
+		//fmt.Printf("Time: %d - Distance: %d - MS: %d - TTM: %d - DR: %d\n", time, dist, ms, timeToMove, distResult)
+		round = append(round, distResult)
+	}
+	for _, result := range round {
+		if result > dist {
+			r.sum2++
+		}
+	}
+	fmt.Printf("result: %+v\n", r)
+}
+
+func joinNumbers(in []int) int {
+	var outStr string
+	for _, v := range in {
+		outStr += strconv.Itoa(v)
+	}
+	out, _ := strconv.Atoi(outStr)
+	return out
 }
 
 func (d *dataT) importData() error {
